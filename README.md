@@ -19,8 +19,8 @@ There are some configuration left as comments in the application config files, j
 If you want to set up the stack on different hosts, I also have notes made on the comments. You will need to split the sample docker-compose content on different hosts.<br>
 Please read the comments on docker-compose files and config files of each applications, and adjust the setting to fit your environment.
 
-#Redis issues
+# Redis issues
 unfinished
 
-#Enable logstash redis cluster input
+# Enable logstash redis cluster input
 unfinished
