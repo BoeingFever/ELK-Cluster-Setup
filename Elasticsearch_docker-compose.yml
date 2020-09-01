@@ -268,7 +268,8 @@ services:
     # networks:
     #   - esnet
   logstash:
-    image: self_build/logstash-oss:7.9.0
+    # Please read the readme.md to know what is going on about the self_build logstash here
+    image: my_self_build/logstash-oss:7.9.0
     container_name: logstash
     # entrypoint: ["bin/logstash","-e","input { redis{cluster => ['redis://10.222.60.182:6379'] key => 'test_key' data_type => 'list'} } output {stdout { codec => rubydebug }}"]
     volumes:
