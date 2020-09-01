@@ -1,0 +1,160 @@
+#=========================== Filebeat inputs =============================
+
+filebeat.inputs:
+
+# Each - is an input. Most options can be set at the input level, so
+# you can use different inputs for various configurations.
+# Below are the input specific configurations.
+
+- type: log
+
+  # Change to true to enable this input configuration.
+  enabled: true
+  paths:
+    - /var/applogs/*.json
+  scan_frequency: 15s
+  json.keys_under_root: true
+  json.add_error_key: true
+
+  #processors:
+  #   - dissect:
+  #       tokenizer: "[%{log.timestamp}] [%{log.level}] [%{method}] [%{thread_name}] %{log.message}"
+  #       field: "message"
+  #   - drop_fields:
+  #       fields: ["message"]  
+  fields:
+    logformat: json
+  fields_under_root: true
+  ignore_older: 96h
+
+  # if json log format is used, then comment out the multiline setting
+  #multiline.pattern: ^\[
+  #multiline.negate: true
+  #multiline.match: after
+
+  tail_files: false
+
+  close_inactive: 24h
+
+  close_removed: true
+
+  ### State options
+  # Removes the state for file which cannot be found on disk anymore immediately
+  clean_removed: true
+##########################
+- type: log
+
+  # Change to true to enable this input configuration.
+  enabled: true
+  paths:
+    - /var/applogs/*.log
+  # How often the input checks for new files in the paths that are specified
+  # for harvesting. Specify 1s to scan the directory as frequently as possible
+  # without causing Filebeat to scan too frequently. Default: 10s.
+  scan_frequency: 15s
+  
+  multiline.pattern: "^[0-9]{8}"
+  multiline.negate: true
+  multiline.match: after
+  fields:
+    logformat: plaintext
+  fields_under_root: true
+  ignore_older: 24h
+  tail_files: false
+  close_inactive: 24h
+  close_removed: true
+  ### State options
+  # Removes the state for file which cannot be found on disk anymore immediately
+  clean_removed: true  
+#========================= Filebeat global options ============================
+# How long filebeat waits on shutdown for the publisher to finish.
+# Default is 0, not waiting.
+filebeat.shutdown_timeout: 10s
+
+#================================ General ======================================
+# The tags of the shipper are included in their own field with each
+# transaction published. Tags make it easy to group servers by different
+# logical properties.
+#============================= Filebeat modules ===============================
+
+filebeat.config.modules:
+  # Glob pattern for configuration loading
+  path: ${path.config}/modules.d/*.yml
+
+  # Set to true to enable config reloading
+  reload.enabled: false
+
+  # Period on which files under path should be checked for changes
+  #reload.period: 10s
+
+#==================== Elasticsearch template setting ==========================
+#setup.template.name: "*-%{[agent.version]}-%{+yyyy.MM.dd}"
+#setup.template.pattern: "*-%{[agent.version]}-%{+yyyy.MM.dd}"
+#setup.template.overwrite: true
+#setup.template.settings:
+#  index.number_of_shards: 1
+  #index.codec: best_compression
+  #_source.enabled: false
+#setup.ilm.enabled: false
+
+#================================ Outputs =====================================
+
+# Configure what output to use when sending the data collected by the beat.
+
+#-------------------------- Elasticsearch output ------------------------------
+#output.elasticsearch:
+  # Array of hosts to connect to.
+#  hosts: ["localhost:9200"]
+#  index: "logtest-application-log-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+
+  #index: "${app_name}-%{[agent.version]}-%{+yyyy.MM.dd}"
+  # Optional protocol and basic auth credentials.
+  #protocol: "https"
+  #username: "elastic"
+  #password: "changeme"
+
+#----------------------------- Logstash output --------------------------------
+# output.logstash:
+  # The Logstash hosts
+  # hosts: ["localhost:5044"]
+  #pipeline: logtest
+  # Optional SSL. By default is off.
+  # List of root certificates for HTTPS server verifications
+  #ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+
+  # Certificate for SSL client authentication
+  #ssl.certificate: "/etc/pki/client/cert.pem"
+
+  # Client Certificate Key
+  #ssl.key: "/etc/pki/client/cert.key"
+
+# -------------------------------- Redis Output --------------------------------
+output.redis:
+  # please adjust the ip and port below with your redis hosts and ports
+  hosts: ["10.222.60.182:6379","10.222.60.182:6380","10.222.60.183:6379","10.222.60.183:6380","10.222.60.148:6379","10.222.60.148:6380"]
+  
+  # if the redis cluster nodes or single instance running under the same virtual network of your filebeat
+  # just put the redis container names in the host array
+  # hosts: ["redis01"]
+  
+  # password for authentication of accessing redis nodes, optional
+  #password: "my_password"
+  key: "test_key"
+  db: 0
+  timeout: 60
+  # worker: 2
+
+#================================= Paths ======================================
+# The logs path for a Filebeat installation. This is the default location for
+# the Beat's log files. If not set by a CLI flag or in the configuration file,
+# the default for the logs path is a logs subdirectory inside the home path.
+path.logs: /var/log/filebeat/
+
+#================================ Processors =====================================
+
+# Configure processors to enhance or manipulate events generated by the beat.
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~

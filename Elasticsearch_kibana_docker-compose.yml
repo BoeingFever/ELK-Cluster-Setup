@@ -1,0 +1,280 @@
+version: '3'
+services:
+  msnode1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    container_name: msnode1
+    restart: on-failure
+    environment:
+      - cluster.name=escluster
+      - node.name=msnode1
+      - node.master=true
+      - node.data=false
+      # default host bind ip already 0.0.0.0
+      # change it to your host ip when you deploy ES nodes on different hosts, while this may not work, you need to test it
+      # network.host=0.0.0.0
+      - node.ingest=false
+      - path.logs=/var/log/elasticsearch
+      - path.data=/var/data/elasticsearch
+      # change the container name here to host IP when you deploy ES nodes on different hosts
+      - discovery.seed_hosts=msnode1,msnode2,msnode3
+      - cluster.initial_master_nodes=msnode1,msnode2,msnode3
+      # Apply this config when you deploy ES nodes on different hosts
+      #- network.publish_host=10.222.60.180
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      nproc: 4096
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      # this is the default log4j2.properties get from windows/linux zip, enabling json format log
+      - /home/dev/esconfig/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      # this is to mount log directory, optional
+      #- /home/dev/eslogs/:/var/log/elasticsearch
+      #- /home/dev/esdata/:/var/data/elasticsearch
+      # this is to mount ES config file, if you need to, optional
+      #- /home/dev/esconfig/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  msnode2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    container_name: msnode2
+    restart: on-failure
+    environment:
+      - cluster.name=escluster
+      - node.name=msnode2
+      - node.master=true
+      - node.data=false
+      # default host bind ip already 0.0.0.0
+      # change it to your host ip when you deploy ES nodes on different hosts, while this may not work, you need to test it
+      # network.host=0.0.0.0
+      - node.ingest=false
+      - path.logs=/var/log/elasticsearch
+      - path.data=/var/data/elasticsearch
+      # change the container name here to host IP when you deploy ES nodes on different hosts
+      - discovery.seed_hosts=msnode1,msnode2,msnode3
+      - cluster.initial_master_nodes=msnode1,msnode2,msnode3
+      # Apply this config when you deploy ES nodes on different hosts
+      #- network.publish_host=10.222.60.181
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      nproc: 4096
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      # this is the default log4j2.properties get from windows/linux zip, enabling json format log
+      - /home/dev/esconfig/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      # this is to mount log directory, optional
+      #- /home/dev/eslogs/:/var/log/elasticsearch
+      #- /home/dev/esdata/:/var/data/elasticsearch
+      # this is to mount ES config file, if you need to, optional
+      #- /home/dev/esconfig/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  msnode3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    container_name: msnode3
+    restart: on-failure
+    environment:
+      - cluster.name=escluster
+      - node.name=msnode3
+      - node.master=true
+      - node.data=false
+      # default host bind ip already 0.0.0.0
+      # change it to your host ip when you deploy ES nodes on different hosts, while this may not work, you need to test it
+      # network.host=0.0.0.0
+      - node.ingest=false
+      - path.logs=/var/log/elasticsearch
+      - path.data=/var/data/elasticsearch
+      # change the container name here to host IP when you deploy ES nodes on different hosts
+      - discovery.seed_hosts=msnode1,msnode2,msnode3
+      - cluster.initial_master_nodes=msnode1,msnode2,msnode3
+      # Apply this config when you deploy ES nodes on different hosts
+      #- network.publish_host=10.222.60.182
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      nproc: 4096
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      # this is the default log4j2.properties get from windows/linux zip, enabling json format log
+      - /home/dev/esconfig/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      # this is to mount log directory, optional
+      #- /home/dev/eslogs/:/var/log/elasticsearch
+      #- /home/dev/esdata/:/var/data/elasticsearch
+      # this is to mount ES config file, if you need to, optional
+      #- /home/dev/esconfig/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  datanode1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    container_name: datanode1
+    restart: on-failure
+    environment:
+      - cluster.name=escluster
+      - node.name=datanode1
+      - node.master=false
+      - node.data=true
+      # default host bind ip already 0.0.0.0
+      # change it to your host ip when you deploy ES nodes on different hosts, while this may not work, you need to test it
+      # network.host=0.0.0.0
+      - node.ingest=false
+      - path.logs=/var/log/elasticsearch
+      - path.data=/var/data/elasticsearch
+      # change the container name here to host IP when you deploy ES nodes on different hosts
+      - discovery.seed_hosts=msnode1,msnode2,msnode3
+      - cluster.initial_master_nodes=msnode1,msnode2,msnode3
+      # Apply this config when you deploy ES nodes on different hosts
+      #- network.publish_host=10.222.60.183
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      nproc: 4096
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      # this is the default log4j2.properties get from windows/linux zip, enabling json format log
+      - /home/dev/esconfig/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      # this is to mount log directory, optional
+      #- /home/dev/eslogs/:/var/log/elasticsearch
+      #- /home/dev/esdata/:/var/data/elasticsearch
+      # this is to mount ES config file, if you need to, optional
+      #- /home/dev/esconfig/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml  
+  datanode2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    container_name: datanode2
+    restart: on-failure
+    environment:
+      - cluster.name=escluster
+      - node.name=datanode2
+      - node.master=false
+      - node.data=true
+      # default host bind ip already 0.0.0.0
+      # change it to your host ip when you deploy ES nodes on different hosts, while this may not work, you need to test it
+      # network.host=0.0.0.0
+      - node.ingest=false
+      - path.logs=/var/log/elasticsearch
+      - path.data=/var/data/elasticsearch
+      # change the container name here to host IP when you deploy ES nodes on different hosts
+      - discovery.seed_hosts=msnode1,msnode2,msnode3
+      - cluster.initial_master_nodes=msnode1,msnode2,msnode3
+      # Apply this config when you deploy ES nodes on different hosts
+      #- network.publish_host=10.222.60.184
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      nproc: 4096
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      # this is the default log4j2.properties get from windows/linux zip, enabling json format log
+      - /home/dev/esconfig/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      # this is to mount log directory, optional
+      #- /home/dev/eslogs/:/var/log/elasticsearch
+      #- /home/dev/esdata/:/var/data/elasticsearch
+      # this is to mount ES config file, if you need to, optional
+      #- /home/dev/esconfig/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml 
+  datanode3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    container_name: datanode3
+    restart: on-failure
+    environment:
+      - cluster.name=escluster
+      - node.name=datanode3
+      - node.master=false
+      - node.data=true
+      # default host bind ip already 0.0.0.0
+      # change it to your host ip when you deploy ES nodes on different hosts, while this may not work, you need to test it
+      # network.host=0.0.0.0
+      - node.ingest=false
+      - path.logs=/var/log/elasticsearch
+      - path.data=/var/data/elasticsearch
+      # change the container name here to host IP when you deploy ES nodes on different hosts
+      - discovery.seed_hosts=msnode1,msnode2,msnode3
+      - cluster.initial_master_nodes=msnode1,msnode2,msnode3
+      # Apply this config when you deploy ES nodes on different hosts
+      #- network.publish_host=10.222.60.183
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      nproc: 4096
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      # this is the default log4j2.properties get from windows/linux zip, enabling json format log
+      - /home/dev/esconfig/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
+      # this is to mount log directory, optional
+      #- /home/dev/eslogs/:/var/log/elasticsearch
+      #- /home/dev/esdata/:/var/data/elasticsearch
+      # this is to mount ES config file, if you need to, optional
+      #- /home/dev/esconfig/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.0
+    container_name: kibana
+    restart: on-failure
+    ports:
+      - 5601:5601
+    volumes:
+      # need to mount kibana config file, since there is an array of IP for ES cluster
+      # docker-compose file not allow array of string env variables
+      - /home/dev/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.9.0
+    container_name: filebeat
+    user: root
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - /home/dev/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /home/dev/my_dev_log/:/var/applogs/
+    # network_mode: "host"
+    # networks:
+    #   - esnet
+  logstash:
+    image: self_build/logstash-oss:7.9.0
+    container_name: logstash
+    # entrypoint: ["bin/logstash","-e","input { redis{cluster => ['redis://10.222.60.182:6379'] key => 'test_key' data_type => 'list'} } output {stdout { codec => rubydebug }}"]
+    volumes:
+      # - /home/dev/logstash_open/temp.conf:/usr/share/logstash/pipeline/logstash.conf
+      - /home/dev/logstash/pipelines.yml:/usr/share/logstash/config/pipelines.yml
+      - /home/dev/logstash/test1.conf:/usr/share/logstash/pipeline/test1.conf
+      - /home/dev/logstash/test2.conf:/usr/share/logstash/pipeline/test2.conf
+    ports:
+      - "5044:5044"
