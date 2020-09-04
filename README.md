@@ -1,6 +1,6 @@
 # ELK-Setup
 
-The content on this repository is my study notes on setting up an ELK stack and Redis cluster as a buffer between filebeat and logstash.<br>
+The content on this repository is my study notes on setting up an ELK stack with docker-compose in single host or multiple hosts.<br>
 This may not help that much if you don't have prior basic knowledge of docker-compose, ELK components configurations (filebeat, logstash, elasticsearch, kibana) and redis.
 
 The architecture is like image shown below<br>
