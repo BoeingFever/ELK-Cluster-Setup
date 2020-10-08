@@ -29,7 +29,7 @@ You're lucky that there is a developer **raycw** wrote an input plugin just for 
 https://github.com/raycw/logstash-input-redis You can download the ``.gem`` file from his github, and use my Dockerfile to build yourself a logstash image that can recognise Redis cluster. Remember to refer to my sample logstash config to know how to connect to Redis cluster.
 
 # Remark: Microservices would better be adopted only under 1 or more of these reasons 
-* traffic/volume through your application is high. And among different services of your application the traffic are different, thus you need to break down services for indepennt scalability*<br>
-* you need zero-downtime independent deployability : 1) reduces impact of new release 2) reduce blast radius on services failure 3) reduce coordination difficulty among teams*
-* you have more tech options in developing individual services for bussiness needs*
-* more organizational autonomy on your team management*
+* traffic/volume through your application is high. And among different services of your application the traffic are different, thus you need to break down services for indepennt scalability (resource/money saving on necessary high demand services only)
+* you need zero-downtime independent deployability : 1) reduces impact of new release 2) reduce blast radius on services failure 3) reduce coordination difficulty among teams
+* you have more tech options in developing individual services for bussiness needs
+* more organizational autonomy on your team management
