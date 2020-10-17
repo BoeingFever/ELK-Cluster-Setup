@@ -32,14 +32,15 @@ Though my sample redis docker-compose file contains 6 nodes, we only need 1 redi
 Node specific configurations such as *IP* and *port* are put on docker-compose `entrypoint` section, All the redis nodes could read the same config file through volume mounting. Besides configurations such as *IP* and *port*, others should be universal for all redis nodes, so maintaining only 1 redis config file is reasonable.
 
 # Enable logstash redis cluster input
+<<<<<<< HEAD
 Now, remember, our logstash is fetching data from redis cluster, not from filebeat. Official logstash by default **NOT** yet support redis cluster input plugin.
 
 You're lucky that there is a developer [**raycw**](https://github.com/raycw) wrote an input plugin for this case.
 
 https://github.com/raycw/logstash-input-redis You can download the ``.gem`` file from his github, and use my Dockerfile to build a logstash image that can recognise Redis cluster. Please refer to my sample logstash config to know how to connect to Redis cluster.
 
-# Remark: Microservices would better be adopted only, under 1 or more of these reasons 
-* traffic/volume through your application is high. And among different services of your application the traffic are different, thus you need to break down services for indepennt scalability
+# Remark: Microservices would better be adopted only under 1 or more of these reasons 
+* traffic/volume through your application is high. And among different services of your application the traffic are different, thus you need to break down services for indepennt scalability (resource/money saving on necessary high demand services only)
 * you need zero-downtime independent deployability : 1) reduces impact of new release 2) reduce blast radius on services failure 3) reduce coordination difficulty among teams
 * you have more tech options in developing individual services for bussiness needs
 * more organizational autonomy on your team management
