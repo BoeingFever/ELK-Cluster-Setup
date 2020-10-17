@@ -1,5 +1,5 @@
-## Redis cluster formation issues on Docker (2020-08)
-
+## Redis cluster formation (2020-08 when I wrote this note)
+**Minimum Redis nodes number required for Redis cluster is 6**
 If you followed any handy Redis cluster tutorial online and found it not working, you may have encountered problems below.
 ##
 Redis command below is supposed let your current Redis instance to test connection and have handshake with other Redis instance. But the command has bugs. **It always returns 'OK'**
@@ -13,16 +13,21 @@ Let's say your current Redis is on vm 192.168.22.01, use Redis command below to 
 
 ##
 Let's say you have some vm machines on VirtualBox, connected to each other either on Bridged Network Mode or NAT Network Mode, each with a Redis container instance running, you would likely configure the bind IP to be the vm's own IP, e.g 10.222.60.182 or 10.220.16.5. 
-If you found Redis instances could not connect to each other, using the method above, then change the bind IP setting as below. 
-But if you think this is unsafe, security is needed, please enable the password setting, please google that to know more :)
-> bind 0.0.0.0
+But then if you found Redis instances could not connect to each other, using the method above, then change the bind IP to be 0.0.0.0
+`bind 0.0.0.0`
 
 And remember the bind setting is to tell Redis which local machine IP address it should listen to, not the incoming IP address from clients. 
 0.0.0.0 means Redis listens to all local IP addresses.
 
+But if you think this is unsafe, security is needed, please enable the password setting, uncomment this 2 lines on `redis_conf`
+```
+#masterauth my_password
+#requirepass my_password
+```
+
 ##
-To enable cluster, there are 3 settings you should enable in Redis configuration file, default : redis.conf
-An example below
+To enable cluster, there are 3 settings you must enable in **Redis configuration file, default : redis.conf** OR in **docker-compose entrypoint section**
+Example below for enabling the config in redis.conf
 ```
 cluster-announce-ip 10.222.60.182
 cluster-announce-port 6379
@@ -43,10 +48,14 @@ cluster-announce-ip 10.222.60.182
 cluster-announce-port 6379
 cluster-announce-bus-port 16379
 ```
-
+##
 After the port numbers hassle, remember you're running the Redis on docker, don't forget to expose / bind those port numbers such that all of your Redis nodes could communicate across the network.
 
 Make sure your configuration is correct.
-Now start all your redis nodes, and then login any one of the nodes, type this command to form cluster
-``redis-cli --cluster create redis_ip_1:http_port_1 redis_ip_2:http_port_2 redis_ip_3:http_port_3 redis_ip_4:http_port_4 redis_ip_5:http_port_5 redis_ip_6:http_port_6 --cluster-replicas 1 ``
-Minimum Redis nodes required for cluster is 6, so there are 6 sets of ip&port, replace the ip and port with yours
+Now start all your redis nodes, and then login any one of the nodes `docker exec -it your_redis_container_id bash`
+
+type this command to form cluster
+
+Without password : ``redis-cli --cluster create redis_ip_1:http_port_1 redis_ip_2:http_port_2 redis_ip_3:http_port_3 redis_ip_4:http_port_4 redis_ip_5:http_port_5 redis_ip_6:http_port_6 --cluster-replicas 1 ``
+
+With password: ``redis-cli --cluster create redis_ip_1:http_port_1 redis_ip_2:http_port_2 redis_ip_3:http_port_3 redis_ip_4:http_port_4 redis_ip_5:http_port_5 redis_ip_6:http_port_6 --cluster-replicas 1 -a my_password``
