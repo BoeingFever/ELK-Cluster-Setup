@@ -2,13 +2,13 @@
 **Minimum Redis nodes number required for Redis cluster is 6**
 If you followed any handy Redis cluster tutorial online and found it not working, you may have encountered problems below.
 ##
-Redis command below is supposed let your current Redis instance to test connection and have handshake with other Redis instance. But the command has bugs. **It always returns 'OK'**
+The Redis command below is supposed to let your current Redis instance to test connection and have handshake with other Redis instance. But the command has bugs before cluster formed. **It always returns 'OK'**
 > cluster meet another_ip another_port
 
-To check it for real, you can only launch bash shell in the Redis container and check
-> docker exec -it container_id /bin/bash
+To check connection for real, you can only launch bash shell in the Redis container and check, so firstly
+> docker exec -it your_redis_container_id bash
 
-Let's say your current Redis is on vm 192.168.22.01, use Redis command below to login Redis on another vm 192.168.22.02, if you can login, that means they can actually connect to each other
+Now secondly, let's say your current Redis is on vm 192.168.22.01, use Redis command below to login Redis console on another vm 192.168.22.02, if you can login, that means they can actually connect to each other
 > redis-cli -h 192.168.22.02 -p another_port
 
 ##
@@ -27,7 +27,7 @@ But if you think this is unsafe, security is needed, please enable the password 
 
 ##
 To enable cluster, there are 3 settings you must enable in **Redis configuration file, default : redis.conf** OR in **docker-compose entrypoint section**
-Example below for enabling the config in redis.conf
+Example below for enabling the settings in redis.conf
 ```
 cluster-announce-ip 10.222.60.182
 cluster-announce-port 6379
@@ -48,14 +48,19 @@ cluster-announce-ip 10.222.60.182
 cluster-announce-port 6379
 cluster-announce-bus-port 16379
 ```
+
+Note that the ip 10.222.60.182 I put on the sample docker-compose file is my VM IP, please adjust the IP to fit your environment.
+
 ##
 After the port numbers hassle, remember you're running the Redis on docker, don't forget to expose / bind those port numbers such that all of your Redis nodes could communicate across the network.
 
 Make sure your configuration is correct.
-Now start all your redis nodes, and then login any one of the nodes `docker exec -it your_redis_container_id bash`
+Now start all your redis nodes, and then launch bash shell on any one of the redis nodes `docker exec -it your_redis_container_id bash`
 
 type this command to form cluster
 
-Without password : ``redis-cli --cluster create redis_ip_1:http_port_1 redis_ip_2:http_port_2 redis_ip_3:http_port_3 redis_ip_4:http_port_4 redis_ip_5:http_port_5 redis_ip_6:http_port_6 --cluster-replicas 1 ``
+Without password
+> redis-cli --cluster create redis_ip_1:http_port_1 redis_ip_2:http_port_2 redis_ip_3:http_port_3 redis_ip_4:http_port_4 redis_ip_5:http_port_5 redis_ip_6:http_port_6 --cluster-replicas 1
 
-With password: ``redis-cli --cluster create redis_ip_1:http_port_1 redis_ip_2:http_port_2 redis_ip_3:http_port_3 redis_ip_4:http_port_4 redis_ip_5:http_port_5 redis_ip_6:http_port_6 --cluster-replicas 1 -a my_password``
+With password
+> redis-cli --cluster create redis_ip_1:http_port_1 redis_ip_2:http_port_2 redis_ip_3:http_port_3 redis_ip_4:http_port_4 redis_ip_5:http_port_5 redis_ip_6:http_port_6 --cluster-replicas 1 -a my_password

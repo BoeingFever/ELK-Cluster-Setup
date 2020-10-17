@@ -1,4 +1,4 @@
-# ELK Cluster Setup (docker-compose)
+#
 
 The content on this repository is my study notes on setting up an ELK stack with docker-compose in single host or multiple hosts.<br>
 
@@ -8,31 +8,36 @@ The architecture is like image shown below<br>
 Image is from https://logz.io/blog/deploying-redis-elk/, to know more about ELK or how to set up ELK stack in different ways, you can visit the website and find quite a number of useful blog posts there.
 <br><br>
 
-2 Sample docker-compose files here to help you quickly set up Elasticsearch cluster and redis cluster on the same host or different hosts.
+2 Sample docker-compose files here to help you quickly start Elasticsearch cluster and Redis cluster on the same host.
 
+There are some configurations left as comments in the application config files, just for my future easy reference, you can ignore them.
+
+**If you need to separate Elasticsearch or Redis nodes on multiple hosts, you need to adjust the config. I made notes on the comments which you can take as reference**. 
+- You need to split the sample docker-compose content, 1 docker-compose file on each host.
+- Please read the comments on docker-compose files and config files of each applications, and adjust the setting to fit your environment.
+
+# ELK Cluster Setup (docker-compose)
 **By starting up the sample `Elasticsearch_docker-compose`, all Elasticsearch nodes would start locally and  automatically form cluster and other miscellaneous app would also start locally** 
 
 You would better have prior basic knowledge of docker-compose, ELK components configurations (filebeat, logstash, elasticsearch, kibana) and redis.
 
 All the application specific config files used in the sample docker-compose files can be found on this repo too.<br>
-They are under the folders with names of specific applications.<br><br>
-**Adjust any settings related to paths, such as docker voloume or others on application config files to fit your working directory.**<br>
+They are under the folders with names of specific applications.<br>
+**Adjust any settings related to paths, such as docker voloume or others on application config files to fit your working directory.**
 
-There are some configurations left as comments in the application config files, just for my future easy reference, you can ignore them.<br>
-**If you want to set up the stack on different hosts, I made notes on the comments too**. You will need to split the sample docker-compose content on different hosts.<br>
-Please read the comments on docker-compose files and config files of each applications, and adjust the setting to fit your environment.
 
 # Redis Cluster Setup (docker-compose)
 **By starting up the sample `Redis_Cluster_docker-compose`, all Redis nodes would start locally, but not yet they would form cluster** 
 
-About how to form redis cluster and redis issues I found during study, please read `README` under `Redis` folder .
+Before forming Redis cluster, please read my `README` under `Redis` folder.
 
 Though my sample redis docker-compose file contains 6 nodes, we only need 1 redis config file here.<br>
 
 Node specific configurations such as *IP* and *port* are put on docker-compose `entrypoint` section, All the redis nodes could read the same config file through volume mounting. Besides configurations such as *IP* and *port*, others should be universal for all redis nodes, so maintaining only 1 redis config file is reasonable.
 
+**Adjust any settings related to paths, such as docker voloume or others on application config files to fit your working directory.**
+
 # Enable logstash redis cluster input
-<<<<<<< HEAD
 Now, remember, our logstash is fetching data from redis cluster, not from filebeat. Official logstash by default **NOT** yet support redis cluster input plugin.
 
 You're lucky that there is a developer [**raycw**](https://github.com/raycw) wrote an input plugin for this case.
